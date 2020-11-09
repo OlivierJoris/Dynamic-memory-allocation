@@ -9,7 +9,7 @@ BR(main)
 
 main:
 	|; initialize the malloc system
-	malloc_init()
+	beta_alloc_init()
 	|; allocate an array of size 5 and then free it
 	CMALLOC(5)
 	MOVE(R0, R1)
