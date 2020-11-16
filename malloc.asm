@@ -43,11 +43,17 @@ malloc:
 
 	|; Stores registers that will be modified
 	PUSH (R1) |; n
+	PUSH (R2) |; prev
+	PUSH (R3) |; curr
 
 	|; Gets argument n from stack
 	LD(BP, -12, R1)
 	CMPLEC(R1, 0, R0)
 	BT(RO, malloc_error) |; n <= 0
+
+	|; sets pointers prev and curr
+	CMOVE(NULL, R2)
+	CMOVE(FP, R3)
 
 
 
