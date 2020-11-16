@@ -29,6 +29,26 @@ malloc:
 	MOVE(SP, BP)
 	|; Insert your malloc implementation here ....
 
+	|; Stores registers that will be modified
+	PUSH (R1) |; n
+
+	|; Gets argument n from stack
+	LD(BP, -12, R1)
+	CMPLEC(R1, 0, R0)
+	BT(RO, malloc_error) |; n <= 0
+
+
+
+malloc_end:
+	POP(R1)
+	RTN()
+
+|; Error in malloc
+malloc_error:
+	CMOVE(NULL, R0)
+	RTN()
+
+
 
 |; Free a dynamically allocated array starting at address p.
 |; Args:
