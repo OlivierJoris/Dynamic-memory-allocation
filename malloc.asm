@@ -18,6 +18,18 @@ bbp_init_val:
 |; call free on the array at address Reg[Ra]
 .macro FREE(Ra)          PUSH(Ra) CALL(free, 1)
 
+|; Following macros are based on the ones of malloc.c
+
+|; stores in Reg[Ro] the address of another memory block
+|; from memory block at Mem[pointer]
+.macro block_next(pointer, Ro) ADDC(pointer, 4, Ro) LD(Ro, 0, Ro)
+|; stores in Reg[Ro] the size of memory block at Mem[pointer]
+.macro block_size(pointer, Ro) LD(pointer, 0, Ro)
+|; stores in Reg[Ro] the address of the first word of the
+|; chunk of memory of memory block at Mem[pointer]
+.macro block_start(pointer, Ro) ADDC(pointer, 8, Ro)
+
+
 
 |; Dynamically allocates an array of size n.
 |; Args:
