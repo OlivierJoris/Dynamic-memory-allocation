@@ -81,7 +81,6 @@ try_use_block_same_size:
 	|; block_size(curr) ?= n
 	CMPEQ(R5, R1, R0)
 	BF(R0, try_use_block_smaller)
-	BR(try_use_block_updates)
 
 try_use_block_updates:
 	|; removes block from free list & updates header
@@ -102,7 +101,6 @@ try_use_block_set_fp:
 try_use_block_smaller:
 	|; block_size(curr) < n
 	CMOVE(0, R0)
-	BR(try_use_block_end)
 
 try_use_block_end:
 	POP(R7) POP(R6) POP(R5) POP(R4)
@@ -175,7 +173,6 @@ malloc_no_valid_block:
 
 malloc_error:
 	CMOVE(NULL, R0)
-	BR(malloc_end)
 
 malloc_end:
 	POP(R7) POP(R6) POP(R5) POP(R4)
