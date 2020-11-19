@@ -106,7 +106,7 @@ try_use_block_smaller:
 
 try_use_block_end:
 	POP(R7) POP(R6) POP(R5) POP(R4)
-	pop(R3) POP(R2) POP(R1)
+	POP(R3) POP(R2) POP(R1)
 	POP(BP) POP(LP)
 	RTN()
 
