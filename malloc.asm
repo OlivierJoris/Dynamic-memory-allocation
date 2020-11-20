@@ -33,7 +33,7 @@ bbp_init_val:
 |; block at Mem[Reg[Ra]]
 .macro block_next_set(Ra, Rb) ST(Rb, 4, Ra)
 |; stores content of Reg[Rb] as block size of block at Mem[Reg[Ra]]
-.macrp block_size_set(Ra, Rb) ST(Rb, 0, Ra)
+.macro block_size_set(Ra, Rb) ST(Rb, 0, Ra)
 
 
 |; Checks if a given block can hold a given space.
@@ -69,7 +69,8 @@ try_use_block:
 	|; checks if block_size(curr) is larger than n
 	CMPLE(R6, R5, R0) 				|; R5 >= R6 <=> R6 <= R5
 	BF(R0, try_use_block_same_size)
-	ADD(R2, R6, R7) 				|; R7 <- new_block
+	MULC(R6, 4, R0)					|; memory word = 4 bytes
+	ADD(R2, R0, R7) 				|; R7 <- new_block
 	block_next_set(R7, R4)			|; set block next of new block
 	SUB(R5, R6, R0)
 	block_size_set(R7, R0)			|; set block size of new block
@@ -87,7 +88,7 @@ try_use_block_updates:
 	CMOVE(NULL, R0)
 	block_next_set(R2, R0) 			|; next curr = NULL
 	CMPEQC(R3, NULL, R0)
-	BF(try_use_block_set_fp)
+	BF(R0, try_use_block_set_fp)
 	block_next_set(R3, R4)
 	CMOVE(1, R0)
 	BR(try_use_block_end)
@@ -158,6 +159,7 @@ malloc_loop_next_iteration:
 malloc_no_valid_block:
 	|; need to create a new block
 	ADDC(R1, 2, R4)
+	MULC(R4, 4, R4)			|; memory word = 4 bytes
 	SUB(BBP, R4, R5)
 	CMPLE(R5, SP, R6)
 	CMPLE(BBP, R5, R7)
