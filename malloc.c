@@ -26,7 +26,7 @@ int try_merge_next(int* block, int* next) {
  * If the block is valid, the free list is updated to reflect the allocation of this block 
  * (removing the block from the list and adding a new block with the remaining 
  * space if necessary). Then, it returns 1. 
- * If the block cannot be used, the function does nothing (and returns 1)
+ * If the block cannot be used, the function does nothing (and returns 1? => I think it should be 0)
  * 
  * @param n        Size requested for allocation 
  * @param curr     Pointer to the header of the current block
