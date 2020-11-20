@@ -161,7 +161,7 @@ malloc_no_valid_block:
 	ADDC(R1, 2, R4)
 	MULC(R4, 4, R4)			|; memory word = 4 bytes
 	SUB(BBP, R4, R5)
-	CMPLE(R5, SP, R6)
+	CMPLT(R5, SP, R6)
 	CMPLE(BBP, R5, R7)
 	OR(R6, R7, R0)
 	BT(R0, malloc_error)
