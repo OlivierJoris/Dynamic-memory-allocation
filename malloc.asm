@@ -38,7 +38,7 @@ bbp_init_val:
 
 |; Checks if a given block can hold a given space.
 |; Updates the free list if the block if valid.
-|; Slip if necessary the given block if its size exceeds the
+|; Split if necessary the given block if its size exceeds the
 |;   given size.
 |; Args:
 |;  - n Requested size
@@ -64,8 +64,7 @@ try_use_block:
 	|; sets registers
 	block_next_get(R2, R4) 			|; R4 <- next
 	block_size_get(R2, R5) 			|; R5 <- block_size(curr)
-	ADDC(R1, 2, R0)
-	MOVE(R0, R6) 					|; R6 <- n+2
+	ADDC(R1, 2, R6)					|; R6 <- n+2
 
 	|; checks if block_size(curr) is larger than n
 	CMPLE(R6, R5, R0) 				|; R5 >= R6 <=> R6 <= R5
