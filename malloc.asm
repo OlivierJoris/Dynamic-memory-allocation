@@ -47,7 +47,7 @@ try_merge_next:
 	PUSH(LP) PUSH(BP)
 	MOVE(SP, BP)
 
-	|; Push registers that will be used to avoid overwritte their previous 
+	|; Push registers that will be used to avoid overwritten their previous 
 	|; values.
 	PUSH(R1) |; block
 	PUSH(R2) |; next
@@ -60,56 +60,7 @@ try_merge_next:
 	|; Gets the current size of the block and check if it is adjacent to next.
 	block_size_get(R1, R3)   |; R3 <- block_size(block)
 	ADDC(R3, 2, R0)          |; R0 <- curr_size + 2
-	ADD(R1, R0, R0)          |; R0 <- block + curr_size + 2 
-	CMPEQ(R0, R2, R0)        |; R0 =? next
-	BF(try_merge_next_error) |; Branch to handle error if not adjacents.
-
-	|; block and next are adjacent -> merges them.
-	ADDC(R3, 2, R0)          |; R0 <- curr_size + 2
-	block_size_get(R2, R3)   |; R3 <- block_size(next)
-	ADD(R0, R3, R0)          |; R0 <- curr_size + 2 + block_size(next)
-	block_size_set(R1, R0)   |; block_size(block) <- curr_size + 2  
-							 |; + block_size(next)
-
-	block_next_get(R2, R0)   |; R0 <- block_next(next)
-	block_next_set(R1, R0)   |; block_next(block) <- block_next(next)
-	CMOVE(1, R0)             |; Updates the return value.
-	BR(try_merge_next_end)
-
-try_merge_next_error:
-	CMOVE(0, R0)             |; Updates the return value.
- 
-try_merge_next_end:
-	|; Retrieves values for the modified register and returns.
-	POP(R3) POP(R2) POP(R1)
-	POP(BP) POP(LP)
-	RTN()
-
-|; Try to merge two given blocks if they are adjacents to increase the size
-|; of the free blocks
-|; Args:
-|;  - block Pointer to the first block to merge
-|;  - next Pointer to the second block to merge
-|; Returns:
-|;  - 0 if block and next are not adjacents
-|;  - Else, 1
-try_merge_next:
-	PUSH(LP) PUSH(BP)
-	MOVE(SP, BP)
-
-	|; Push registers that will be used to avoid overwritte their previous 
-	|; values.
-	PUSH(R1) |; block
-	PUSH(R2) |; next
-	PUSH(R3) |; curr_size
-
-	|; Gets arguments from the stack.
-	LD(BP, -12, R1)          |; block
-	LD(BP, -16, R2)          |; next
-
-	|; Gets the current size of the block and check if it is adjacent to next.
-	block_size_get(R1, R3)   |; R3 <- block_size(block)
-	ADDC(R3, 2, R0)          |; R0 <- curr_size + 2
+	|; i think it should be ADDC(R3, 8, R0) because we are addressing words of 4 bytes
 	ADD(R1, R0, R0)          |; R0 <- block + curr_size + 2 
 	CMPEQ(R0, R2, R0)        |; R0 =? next
 	BF(try_merge_next_error) |; Branch to handle error if not adjacents.
@@ -290,7 +241,7 @@ free:
 	MOVE(SP, BP)
 	|; Insert your free implementation here ....
 
-	|; Push registers that will be used to avoid overwritte their previous 
+	|; Push registers that will be used to avoid overwritten their previous 
 	|; values.
 	PUSH(R1) |; p
 	PUSH(R2) |; prev
@@ -307,23 +258,27 @@ free:
 	CMOVE(NULL, R2)    |; R2 <- NULL
 	MOVE(FP, R3)       |; R3 <- FP
 
-find_insertion_point:
+free_find_insertion_point:
 	|; Stores the stop condition of the loop in R0.
 	CMPEQC(R3, NULL, R5)     |; R5 <- curr ?= null
-	CMPLE(R1, R3, R6)        |; R6 <- p <=? curr 
-	OR(R5, R6, R0)           |; R0 <- (curr == null or p <= curr) 
+	CMPLE(R1, R3, R6)        |; R6 <- p <=? curr
+	|; It should be CMPLE(R3, R1, R6) because the condition is curr < p
+	OR(R5, R6, R0)           |; R0 <- (curr == null or p <= curr)
+	|; it should be AND(R5, R6, R0)
 							 
 	|; Exits the loop if an insertion point has been found, else skips blocks 
 	|; until finding it
 	BT(R0, update_free_list) 
 	MOVE(R3, R2)             |; R2 <- curr
 	block_next_get(R3, R3)   |; R3 <- block_next(curr)
-	BR(find_insertion_point) |; Branch to loop until finding the insertion 
+	BR(free_find_insertion_point) |; Branch to loop until finding the insertion 
 					         |; point.
 
 update_free_list:
     |; Inserts freed block in the right place in the free list.
 	SUBC(R1, 2, R4)          |; freed <- p - 2
+	|; it should be SUBC(R1, 8, R4) becuase we are addressing words of 4 bytes
+	|; so 2*4
 	block_next_set(R4, R3)   |; block_next(freed) <- curr
 
 	PUSH(R3) PUSH(R4)        |; Push the arguments of try_merge_next on the 
@@ -331,7 +286,7 @@ update_free_list:
 	CALL(try_merge_next, 2)  |; Call the function with the arguments previously 
 	                         |; pushed on the stack.
 	CMPEQC(R2, NULL, R0)     |; R0 <- prev ?= null 
-	BT(prev_null)            
+	BT(R0, free_prev_null)            
 
 	block_next_set(R2, R4)   |; block_next(prev) <- freed
 	PUSH(R4) PUSH(R2)        |; Push the arguments of try_merge_next on the 
@@ -340,13 +295,13 @@ update_free_list:
 	                         |; pushed on the stack.
 	BR(free_end)
 
-prev_null:
+free_prev_null:
 	MOVE(R4, FP) |; FP <- freed
 
 free_end:
 	|; Retrieves values for the modified register and returns.
 	POP(R6) POP(R5) POP(R4)
 	POP(R3) POP(R2) POP(R1)
-	POP(LP)
 	POP(BP)
+	POP(LP)
 	RTN()
