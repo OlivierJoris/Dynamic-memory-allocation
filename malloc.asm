@@ -258,7 +258,7 @@ free:
 	MOVE(FP, R3)       |; R3 <- FP
 
 free_find_insertion_point:
-	|; Stores the stop condition of the loop in R0.
+	|; Stores the stop condition (negation of the guardian) of the loop in R0.
 	CMPEQC(R3, NULL, R5)     |; R5 <- curr ?= null
 	CMPLE(R1, R3, R6)        |; R6 <- p <=? curr
 	OR(R5, R6, R0)           |; R0 <- (curr == null or p <= curr)
