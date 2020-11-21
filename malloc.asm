@@ -62,7 +62,7 @@ try_merge_next:
 	ADDC(R3, 8, R0)          |; R0 <- curr_size + 2
 	ADD(R1, R0, R0)          |; R0 <- block + curr_size + 2 
 	CMPEQ(R0, R2, R0)        |; R0 =? next
-	BF(try_merge_next_error) |; Branch to handle error if not adjacents.
+	BF(R0, try_merge_next_error) |; Branch to handle error if not adjacents.
 
 	|; block and next are adjacent -> merges them.
 	ADDC(R3, 2, R0)          |; R0 <- curr_size + 2
