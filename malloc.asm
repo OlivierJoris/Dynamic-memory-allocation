@@ -59,8 +59,7 @@ try_merge_next:
 
 	|; Gets the current size of the block and check if it is adjacent to next.
 	block_size_get(R1, R3)   |; R3 <- block_size(block)
-	ADDC(R3, 2, R0)          |; R0 <- curr_size + 2
-	|; i think it should be ADDC(R3, 8, R0) because we are addressing words of 4 bytes
+	ADDC(R3, 8, R0)          |; R0 <- curr_size + 2
 	ADD(R1, R0, R0)          |; R0 <- block + curr_size + 2 
 	CMPEQ(R0, R2, R0)        |; R0 =? next
 	BF(try_merge_next_error) |; Branch to handle error if not adjacents.
@@ -262,23 +261,19 @@ free_find_insertion_point:
 	|; Stores the stop condition of the loop in R0.
 	CMPEQC(R3, NULL, R5)     |; R5 <- curr ?= null
 	CMPLE(R1, R3, R6)        |; R6 <- p <=? curr
-	|; It should be CMPLE(R3, R1, R6) because the condition is curr < p
 	OR(R5, R6, R0)           |; R0 <- (curr == null or p <= curr)
-	|; it should be AND(R5, R6, R0)
 							 
 	|; Exits the loop if an insertion point has been found, else skips blocks 
 	|; until finding it
-	BT(R0, update_free_list) 
-	MOVE(R3, R2)             |; R2 <- curr
-	block_next_get(R3, R3)   |; R3 <- block_next(curr)
+	BT(R0, free_update_list) 
+	MOVE(R3, R2)                  |; R2 <- curr
+	block_next_get(R3, R3)        |; R3 <- block_next(curr)
 	BR(free_find_insertion_point) |; Branch to loop until finding the insertion 
-					         |; point.
+					              |; point.
 
-update_free_list:
+free_update_list:
     |; Inserts freed block in the right place in the free list.
-	SUBC(R1, 2, R4)          |; freed <- p - 2
-	|; it should be SUBC(R1, 8, R4) becuase we are addressing words of 4 bytes
-	|; so 2*4
+	SUBC(R1, 8, R4)          |; freed <- p - 2
 	block_next_set(R4, R3)   |; block_next(freed) <- curr
 
 	PUSH(R3) PUSH(R4)        |; Push the arguments of try_merge_next on the 
