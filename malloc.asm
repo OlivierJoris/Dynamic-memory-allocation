@@ -138,7 +138,7 @@ try_use_block_updates:
 	CMOVE(NULL, R0)
 	block_next_set(R2, R0) 			|; next curr = NULL
 	CMPEQC(R3, NULL, R0)
-	BF(R0, try_use_block_set_fp)
+	BT(R0, try_use_block_set_fp)
 	block_next_set(R3, R4)
 	CMOVE(1, R0)
 	BR(try_use_block_end)
