@@ -59,8 +59,9 @@ try_merge_next:
 
 	|; Gets the current size of the block and check if it is adjacent to next.
 	block_size_get(R1, R3)   |; R3 <- block_size(block)
-	ADDC(R3, 8, R0)          |; R0 <- curr_size + 2
-	ADD(R1, R0, R0)          |; R0 <- block + curr_size + 2 
+	MULC(R3, 4, R0)			 |; curr_size * 4 because addressing word
+	ADDC(R0, 8, R0)          |; R0 <- curr_size + 2
+	ADD(R1, R0, R0)          |; R0 <- block + curr_size + 2
 	CMPEQ(R0, R2, R0)        |; R0 =? next
 	BF(R0, try_merge_next_error) |; Branch to handle error if not adjacents.
 
@@ -138,7 +139,7 @@ try_use_block_updates:
 	CMOVE(NULL, R0)
 	block_next_set(R2, R0) 			|; next curr = NULL
 	CMPEQC(R3, NULL, R0)
-	BF(R0, try_use_block_set_fp)
+	BT(R0, try_use_block_set_fp)
 	block_next_set(R3, R4)
 	CMOVE(1, R0)
 	BR(try_use_block_end)
