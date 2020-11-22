@@ -65,7 +65,7 @@ try_merge_next:
 	BF(R0, try_merge_next_error) |; Branch to handle error if not adjacents.
 
 	|; block and next are adjacent -> merges them.
-	ADDC(R3, 8, R0)          |; R0 <- curr_size + 2
+	ADDC(R3, 2, R0)          |; R0 <- curr_size + 2
 	block_size_get(R2, R3)   |; R3 <- block_size(next)
 	ADD(R0, R3, R0)          |; R0 <- curr_size + 2 + block_size(next)
 	block_size_set(R1, R0)   |; block_size(block) <- curr_size + 2  
