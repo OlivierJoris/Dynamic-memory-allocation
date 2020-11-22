@@ -11,7 +11,7 @@ main:
 	|; initialize the malloc system
 	beta_alloc_init()
 	|; allocate an array of size 5 and then free it
-	CMALLOC(5)
+	CMALLOC(10)
 	MOVE(R0, R1)
 	FREE(R1)
 	HALT()
